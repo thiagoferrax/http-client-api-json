@@ -1,7 +1,5 @@
 package com.company.hcj.domains.tos;
 
-import java.io.Serializable;
-
 public class Post {
 
 	private int userId;
