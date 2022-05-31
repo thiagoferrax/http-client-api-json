@@ -13,10 +13,11 @@ class APIClientTest {
 	@Test
 	void get() {
 		APIClient client = new APIClient();
-		
-		List<Post> posts = client.<Post>get("https://jsonplaceholder.typicode.com/posts");
-			
-		assertNotNull(posts);
-	}
 
+		String path = "https://jsonplaceholder.typicode.com/posts";
+		List<Post> posts = client.<Post>get(path, Post[].class);
+
+		assertNotNull(posts);
+		assertNotNull(posts.get(0).getTitle());
+	}
 }
