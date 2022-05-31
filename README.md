@@ -4,7 +4,7 @@
 
 ## About
 
-APIClient created just for training purpose.
+APIClient created for training purpose.
 Deals with HTTP requests thought HTTPClient and uses Gson for conversions between JSON and Java Objects.   
 
 #### Tech stack
