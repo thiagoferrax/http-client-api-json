@@ -2,6 +2,7 @@ package com.company.hcj;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
@@ -11,6 +12,7 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
+import com.company.hcj.builders.CommentBuilder;
 import com.company.hcj.domains.tos.Comment;
 import com.company.hcj.domains.tos.Post;
 
@@ -63,5 +65,16 @@ class APIClientTest {
 
 		assertNotNull(comment);
 		assertNotNull(comment.getEmail());
+	}
+	
+	@Test
+	void postHappyDay() {
+
+		String path = "https://jsonplaceholder.typicode.com/comments/";
+
+		APIClient client = new APIClient();
+		Comment comment = CommentBuilder.newComment().withName("Name").withPostId(1).withEmail("email@company.com").withBody("body").now();
+		
+		assertTrue(client.<Comment>post(path, comment));
 	}
 }
