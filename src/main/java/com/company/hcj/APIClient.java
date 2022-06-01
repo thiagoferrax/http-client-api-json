@@ -20,20 +20,17 @@ import com.google.gson.Gson;
 
 public class APIClient {
 
-	public <T> List<T> getList(String path, Class<T[]> clazz) {
+	public static <T> List<T> getList(String path, Class<T[]> clazz) {
 		return getList(path, clazz, null);
 	}
 
-	public <T> List<T> getList(String path, Class<T[]> clazz, Map<String, String> urlParameters) {
+	public static <T> List<T> getList(String path, Class<T[]> clazz, Map<String, String> urlParameters) {
 		List<T> objects = null;
 
 		try {
-			URI uri = buildURI(path, urlParameters);
-
-			HttpResponse<String> response = sendHttpGetRequest(uri);
+			HttpResponse<String> response = sendHttpGetRequest(buildURI(path, urlParameters));
 
 			int statusCode = response.statusCode();
-
 			if (statusCode >= 200 && statusCode <= 299) {
 				objects = Arrays.asList(new Gson().fromJson(response.body(), clazz));
 			}
@@ -44,20 +41,17 @@ public class APIClient {
 		return objects;
 	}
 
-	public <T> T get(String path, Class<T> clazz) {
+	public static <T> T get(String path, Class<T> clazz) {
 		return get(path, clazz, null);
 	}
 
-	public <T> T get(String path, Class<T> clazz, Map<String, String> urlParameters) {
+	public static <T> T get(String path, Class<T> clazz, Map<String, String> urlParameters) {
 		T object = null;
 
 		try {
-			URI uri = buildURI(path, urlParameters);
-
-			HttpResponse<String> response = sendHttpGetRequest(uri);
+			HttpResponse<String> response = sendHttpGetRequest(buildURI(path, urlParameters));
 
 			int statusCode = response.statusCode();
-
 			if (statusCode >= 200 && statusCode <= 299) {
 				object = new Gson().fromJson(response.body(), clazz);
 			}
@@ -68,14 +62,9 @@ public class APIClient {
 		return object;
 	}
 
-	private HttpResponse<String> sendHttpGetRequest(URI uri) throws IOException, InterruptedException {
-		HttpRequest request = buildHttpGetRequest(uri);
-		HttpClient client = HttpClient.newHttpClient();
-		return client.send(request, BodyHandlers.ofString());
-	}
-
-	private HttpRequest buildHttpGetRequest(URI uri) {
-		return HttpRequest.newBuilder().GET().header("accept", "application/json").uri(uri).build();
+	private static HttpResponse<String> sendHttpGetRequest(URI uri) throws IOException, InterruptedException {
+		HttpRequest request = HttpRequest.newBuilder().GET().header("accept", "application/json").uri(uri).build();
+		return HttpClient.newHttpClient().send(request, BodyHandlers.ofString());
 	}
 
 	public static URI buildURI(String path, Map<String, String> urlParameters) throws URISyntaxException {
@@ -88,18 +77,16 @@ public class APIClient {
 		return builder.build();
 	}
 
-	public <T> boolean post(String path, T object) {
+	public static <T> boolean post(String path, T object) {
 
 		try {
-			URI uri = buildURI(path, null);
 			BodyPublisher bodyPublisher = BodyPublishers.ofString(new Gson().toJson(object).toString());
-			HttpRequest request = buildHttpPostRequest(uri, bodyPublisher);
+			HttpRequest request = HttpRequest.newBuilder().POST(bodyPublisher).header("accept", "application/json")
+					.uri(buildURI(path, null)).build();
 
-			HttpClient client = HttpClient.newHttpClient();
-			HttpResponse<String> response = client.send(request, BodyHandlers.ofString());
+			HttpResponse<String> response = HttpClient.newHttpClient().send(request, BodyHandlers.ofString());
 
 			int statusCode = response.statusCode();
-
 			if (statusCode >= 200 && statusCode <= 299) {
 				return true;
 			}
@@ -108,10 +95,6 @@ public class APIClient {
 		}
 
 		return false;
-	}
-
-	private HttpRequest buildHttpPostRequest(URI uri, BodyPublisher bodyPublisher) {
-		return HttpRequest.newBuilder().POST(bodyPublisher).header("accept", "application/json").uri(uri).build();
 	}
 
 }

@@ -20,14 +20,13 @@ class APIClientTest {
 
 	@Test
 	void getListHappyDay() {
-		APIClient client = new APIClient();
-
 		String path = "https://jsonplaceholder.typicode.com/posts";
 
-		List<Post> posts = client.<Post>getList(path, Post[].class);
+		List<Post> posts = APIClient.<Post>getList(path, Post[].class);
 
 		assertNotNull(posts);
-		assertNotNull(posts.get(0).getTitle());
+		assertEquals("sunt aut facere repellat provident occaecati excepturi optio reprehenderit",
+				posts.get(0).getTitle());
 	}
 
 	@Test
@@ -36,8 +35,9 @@ class APIClientTest {
 
 		Map<String, String> urlParameters = new HashMap<>();
 		urlParameters.put("postId", "1");
+		urlParameters.put("email", "email@company.com");
 
-		assertEquals("https://jsonplaceholder.typicode.com/comments?postId=1",
+		assertEquals("https://jsonplaceholder.typicode.com/comments?postId=1&email=email%40company.com",
 				APIClient.buildURI(path, urlParameters).toURL().toString());
 	}
 
@@ -48,33 +48,31 @@ class APIClientTest {
 
 		Map<String, String> urlParameters = new HashMap<>();
 
-		APIClient client = new APIClient();
-		List<Comment> comments = client.<Comment>getList(path, Comment[].class, urlParameters);
+		List<Comment> comments = APIClient.<Comment>getList(path, Comment[].class, urlParameters);
 
 		assertNotNull(comments);
-		assertNotNull(comments.get(0).getEmail());
+		assertEquals("Eliseo@gardner.biz", comments.get(0).getEmail());
 	}
-	
+
 	@Test
 	void getHappyDay() {
 
 		String path = "https://jsonplaceholder.typicode.com/comments/1";
 
-		APIClient client = new APIClient();
-		Comment comment = client.<Comment>get(path, Comment.class);
+		Comment comment = APIClient.<Comment>get(path, Comment.class);
 
 		assertNotNull(comment);
-		assertNotNull(comment.getEmail());
+		assertEquals("Eliseo@gardner.biz", comment.getEmail());
 	}
-	
+
 	@Test
 	void postHappyDay() {
 
 		String path = "https://jsonplaceholder.typicode.com/comments/";
 
-		APIClient client = new APIClient();
-		Comment comment = CommentBuilder.newComment().withName("Name").withPostId(1).withEmail("email@company.com").withBody("body").now();
-		
-		assertTrue(client.<Comment>post(path, comment));
+		Comment comment = CommentBuilder.newComment().withName("Name").withPostId(1).withEmail("email@company.com")
+				.withBody("body").now();
+
+		assertTrue(APIClient.<Comment>post(path, comment));
 	}
 }
