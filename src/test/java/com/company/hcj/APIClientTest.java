@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Test;
 
 import com.company.hcj.builders.CommentBuilder;
 import com.company.hcj.domains.tos.Comment;
+import com.company.hcj.domains.tos.ContactsResult;
 import com.company.hcj.domains.tos.Post;
 
 class APIClientTest {
@@ -75,4 +76,26 @@ class APIClientTest {
 
 		assertTrue(APIClient.<Comment>post(path, comment));
 	}
+	
+	@Test
+	void apisGet() {
+
+		String path = "https://api.hubapi.com/crm/v3/objects/contacts";
+
+		Map<String, String> parameters = new HashMap<>();
+		parameters.put("limit", "10");
+		parameters.put("archived", "false");
+		parameters.put("hapikey", "eu1-d2c4-4bae-46e7-88a3-ab000fe2fe32");
+		
+		ContactsResult contactsResult = APIClient.<ContactsResult>get(path, ContactsResult.class, parameters);
+		
+		assertNotNull(contactsResult);
+		
+		assertNotNull(contactsResult.getResults().get(0).getCreatedAt());
+		
+		contactsResult.getResults().forEach(System.out::println);
+		
+	}
+	
+	
 }
