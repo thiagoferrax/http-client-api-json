@@ -1,11 +1,11 @@
 package com.company.hcj;
 
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Reader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Comparator;
 import java.util.Date;
@@ -18,6 +18,7 @@ import com.company.hcj.domains.tos.Event;
 import com.company.hcj.domains.tos.Partner;
 import com.company.hcj.domains.tos.Partners;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 public class PartnersEvents {
 
@@ -103,6 +104,13 @@ public class PartnersEvents {
 	public static <T> T createObjectsFromJsonFile(String path, Class<T> clazz) throws IOException {
 		Reader reader = Files.newBufferedReader(Paths.get(path));
 		return new Gson().fromJson(reader, clazz);
+	}
+
+	public static <T> void createJsonFileFromObject(T object, String path) throws IOException {
+		FileWriter file = new FileWriter(path);
+		Gson gson = new GsonBuilder().setPrettyPrinting().create();
+		file.write(gson.toJson(object));
+		file.close();
 	}
 
 	public static Date addOneDay(Date date) {
