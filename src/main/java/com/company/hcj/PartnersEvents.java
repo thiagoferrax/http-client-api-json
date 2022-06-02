@@ -24,15 +24,10 @@ public class PartnersEvents {
 	private static Comparator<? super Date> comparator = (date1, date2) -> date1.after(date2) ? 1
 			: date2.after(date1) ? -1 : 0;
 
-	public static Object getEvents(Partners partners) {
+	public static List<Event> getEvents(Partners partners) {
 
 		Map<String, Map<Date, List<String>>> eventMap = buildEventMap(partners.getPartners());
-		List<Event> events = getBestEventDates(eventMap);
-
-		return events;
-	}
-
-	private static List<Event> getBestEventDates(Map<String, Map<Date, List<String>>> eventMap) {
+		
 		List<Event> events = new ArrayList<>();
 		eventMap.forEach((country, availabilityMap) -> {
 
@@ -49,15 +44,16 @@ public class PartnersEvents {
 					continue;
 				}
 
-				joiners1stDay.retainAll(joiners2ndDay);
-
+				List<String> joiners = new ArrayList<>(joiners1stDay);
+				joiners.retainAll(joiners2ndDay);
+				
 				List<String> currentJoiners = event.getJoiners();
 				if (currentJoiners == null) {
 					event.setDates(Arrays.<Date>asList(date, nextDay));
-					event.setJoiners(joiners1stDay);
-				} else if (joiners1stDay.size() > currentJoiners.size()) {
+					event.setJoiners(joiners);
+				} else if (joiners.size() > currentJoiners.size()) {
 					event.setDates(Arrays.<Date>asList(date, nextDay));
-					event.setJoiners(joiners1stDay);
+					event.setJoiners(joiners);
 				}
 			}
 

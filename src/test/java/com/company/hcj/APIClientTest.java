@@ -76,7 +76,7 @@ class APIClientTest {
 
 		assertTrue(APIClient.<Comment>post(path, comment));
 	}
-	
+
 	@Test
 	void apisGet() {
 
@@ -86,16 +86,15 @@ class APIClientTest {
 		parameters.put("limit", "10");
 		parameters.put("archived", "false");
 		parameters.put("hapikey", "eu1-d2c4-4bae-46e7-88a3-ab000fe2fe32");
-		
+
 		ContactsResult contactsResult = APIClient.<ContactsResult>get(path, ContactsResult.class, parameters);
-		
+
 		assertNotNull(contactsResult);
-		
+
 		assertNotNull(contactsResult.getResults().get(0).getCreatedAt());
-		
+
 		contactsResult.getResults().forEach(System.out::println);
-		
+
 	}
-	
-	
+
 }
