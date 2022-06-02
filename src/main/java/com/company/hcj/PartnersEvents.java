@@ -27,7 +27,7 @@ public class PartnersEvents {
 	public static List<Event> getEvents(Partners partners) {
 
 		Map<String, Map<Date, List<String>>> eventMap = buildEventMap(partners.getPartners());
-		
+
 		List<Event> events = new ArrayList<>();
 		eventMap.forEach((country, availabilityMap) -> {
 
@@ -44,16 +44,15 @@ public class PartnersEvents {
 					continue;
 				}
 
-				List<String> joiners = new ArrayList<>(joiners1stDay);
-				joiners.retainAll(joiners2ndDay);
-				
+				joiners1stDay.retainAll(joiners2ndDay);
+
 				List<String> currentJoiners = event.getJoiners();
 				if (currentJoiners == null) {
-					event.setDates(Arrays.<Date>asList(date, nextDay));
-					event.setJoiners(joiners);
-				} else if (joiners.size() > currentJoiners.size()) {
-					event.setDates(Arrays.<Date>asList(date, nextDay));
-					event.setJoiners(joiners);
+					event.setDates(getEventDates(date, nextDay));
+					event.setJoiners(joiners1stDay);
+				} else if (joiners1stDay.size() > currentJoiners.size()) {
+					event.setDates(getEventDates(date, nextDay));
+					event.setJoiners(joiners1stDay);
 				}
 			}
 
@@ -61,6 +60,13 @@ public class PartnersEvents {
 		});
 
 		return events;
+	}
+
+	private static List<Date> getEventDates(Date date, Date nextDay) {
+		List<Date> eventDates = new ArrayList<>();
+		eventDates.add(date);
+		eventDates.add(nextDay);
+		return eventDates;
 	}
 
 	private static Map<String, Map<Date, List<String>>> buildEventMap(List<Partner> partnersList) {
@@ -72,21 +78,26 @@ public class PartnersEvents {
 	private static void buildEventMap(Map<String, Map<Date, List<String>>> eventMap, Partner partner) {
 		partner.getAvailability().forEach(date -> {
 			Map<Date, List<String>> availabilityMap = eventMap.get(partner.getCountry());
+
 			if (availabilityMap == null) {
 				availabilityMap = new TreeMap<>(PartnersEvents.comparator);
-				availabilityMap.put(date, Arrays.<String>asList(partner.getName()));
+				availabilityMap.put(date, newJoinerList(partner.getName()));
 				eventMap.put(partner.getCountry(), availabilityMap);
 			} else {
 				List<String> joiners = availabilityMap.get(date);
 				if (joiners == null) {
-					availabilityMap.put(date, Arrays.<String>asList(partner.getName()));
+					availabilityMap.put(date, newJoinerList(partner.getName()));
 				} else {
-					List<String> newJoiners = new ArrayList<>(joiners);
-					newJoiners.add(partner.getName());
-					availabilityMap.put(date, newJoiners);
+					joiners.add(partner.getName());
 				}
 			}
 		});
+	}
+
+	private static List<String> newJoinerList(String name) {
+		List<String> joiners = new ArrayList<>();
+		joiners.add(name);
+		return joiners;
 	}
 
 	public static <T> T createObjectsFromJsonFile(String path, Class<T> clazz) throws IOException {
